@@ -28,7 +28,7 @@ DATA = get(TEST_FILE_PATH_FULL, hod_struct, prompt=False)
 
 
 def test_long_call_market_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -36,7 +36,7 @@ def test_long_call_market_integration():
         "exit_dte": 7,
     }
 
-    backtest = long_call(DATA, filters)
+    backtest = long_call(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == -9330.0
     assert (
@@ -54,7 +54,7 @@ def test_long_call_market_integration():
 
 
 def test_long_call_midpoint_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -62,7 +62,7 @@ def test_long_call_midpoint_integration():
         "exit_dte": 7,
     }
 
-    backtest = long_call(DATA, filters, mode="midpoint")
+    backtest = long_call(DATA, "midpoint", params)
     print(backtest)
     assert backtest["cost"].sum() == -9630.0
     assert (
@@ -80,14 +80,14 @@ def test_long_call_midpoint_integration():
 
 
 def test_long_call_no_exit_dte_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
         "leg1_delta": 0.30,
     }
 
-    backtest = long_call(DATA, filters)
+    backtest = long_call(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == -7710.0
     assert (
@@ -103,7 +103,7 @@ def test_long_call_no_exit_dte_integration():
 
 
 def test_short_call_market_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -111,7 +111,7 @@ def test_short_call_market_integration():
         "exit_dte": 7,
     }
 
-    backtest = short_call(DATA, filters)
+    backtest = short_call(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == 9930.0
     assert (
@@ -127,7 +127,7 @@ def test_short_call_market_integration():
 
 
 def test_short_call_midpoint_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -135,7 +135,7 @@ def test_short_call_midpoint_integration():
         "exit_dte": 7,
     }
 
-    backtest = short_call(DATA, filters, mode="midpoint")
+    backtest = short_call(DATA, "midpoint", params)
     print(backtest)
     assert backtest["cost"].sum() == 9630.0
     assert (
@@ -151,7 +151,7 @@ def test_short_call_midpoint_integration():
 
 
 def test_long_put_market_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -159,7 +159,7 @@ def test_long_put_market_integration():
         "exit_dte": 7,
     }
 
-    backtest = long_put(DATA, filters)
+    backtest = long_put(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == -4470.0
     assert (
@@ -175,7 +175,7 @@ def test_long_put_market_integration():
 
 
 def test_long_put_midpoint_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -183,7 +183,7 @@ def test_long_put_midpoint_integration():
         "exit_dte": 7,
     }
 
-    backtest = long_put(DATA, filters)
+    backtest = long_put(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == -4470.0
     assert (
@@ -199,7 +199,7 @@ def test_long_put_midpoint_integration():
 
 
 def test_short_put_market_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -207,7 +207,7 @@ def test_short_put_market_integration():
         "exit_dte": 7,
     }
 
-    backtest = short_put(DATA, filters)
+    backtest = short_put(DATA, params)
     print(backtest)
     assert backtest["cost"].sum() == 5060.0
     assert (
@@ -223,7 +223,7 @@ def test_short_put_market_integration():
 
 
 def test_short_put_midpoint_integration():
-    filters = {
+    params = {
         "start_date": datetime(2018, 1, 1),
         "end_date": datetime(2018, 2, 28),
         "entry_dte": 31,
@@ -231,7 +231,7 @@ def test_short_put_midpoint_integration():
         "exit_dte": 7,
     }
 
-    backtest = short_put(DATA, filters, mode="market")
+    backtest = short_put(DATA, "market", params)
     print(backtest)
     assert backtest["cost"].sum() == 5060.0
     assert (

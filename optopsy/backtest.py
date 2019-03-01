@@ -151,6 +151,7 @@ def _prepare_filters(fil):
 
 
 def create_spread(data, leg_structs, fil, mode):
+    logging.debug(f"Processing {len(data.index)} rows...")
     f = _prepare_filters(fil)
     data = filter_data(data, f[0])
     legs = [_create_legs(data, leg) for leg in leg_structs]

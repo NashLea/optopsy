@@ -16,13 +16,11 @@
 
 import logging
 from .enums import OptionType
-from .backtest import create_spread 
-from .filters import filter_data, func_map
+from .backtest import create_spread
 from .checks import (
-	data_checks,
     singles_checks,
-    call_spread_checks,
-    put_spread_checks,
+    vertical_call_checks,
+    vertical_put_checks,
     iron_condor_checks,
 )
 
@@ -30,67 +28,54 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def _process_legs(data, legs, fil, check_func, mode):
-    logging.debug(f"Filters: {fil}")
-    if _filter_checks(fil, check_func):
-        logging.debug(f"Processing {len(data.index)} rows...")
-        return create_spread(data, legs, fil, mode)
+def _process_legs(data, legs, params, check_func):
+    check_func(data, params)
+    #TODO: Remove mode parameter
+    return create_spread(data, legs, params, "market")
 
 
-def _filter_checks(filter, func=None):
-    return True if func is None else func(filter)
-
-
-def long_call(data, filters, mode="market"):
-    logger.debug("Creating Long Calls...")
+def long_call(data, **params):
     legs = [(OptionType.CALL, 1)]
-    return _process_legs(data, legs, filters, singles_checks, mode)
+    return _process_legs(data, legs, params, singles_checks)
 
 
-def short_call(data, filters, mode="market"):
-    logger.debug("Creating Short Calls...")
+def short_call(data, **params):
     legs = [(OptionType.CALL, -1)]
-    return _process_legs(data, legs, filters, singles_checks, mode)
+    return _process_legs(data, legs, params, singles_checks)
 
 
-def long_put(data, filters, mode="market"):
-    logger.debug("Creating Long Puts...")
+def long_put(data, **params):
     legs = [(OptionType.PUT, 1)]
-    return _process_legs(data, legs, filters, singles_checks, mode)
+    return _process_legs(data, legs, params, singles_checks)
 
 
-def short_put(data, filters, mode="market"):
-    logger.debug("Creating Short Puts...")
+def short_put(data, **params):
     legs = [(OptionType.PUT, -1)]
-    return _process_legs(data, legs, filters, singles_checks, mode)
+    return _process_legs(data, legs, params, singles_checks)
 
 
-def long_call_spread(data, filters, mode="market"):
-    logger.debug("Creating Long Call Spreads...")
+def long_call_spread(data, **params):
     legs = [(OptionType.CALL, 1), (OptionType.CALL, -1)]
-    return _process_legs(data, legs, filters, call_spread_checks, mode)
+    return _process_legs(data, legs, params, vertical_call_checks)
 
 
-def short_call_spread(data, filters, mode="market"):
-    logger.debug("Creating Short Call Spreads...")
+def short_call_spread(data, **params):
     legs = [(OptionType.CALL, -1), (OptionType.CALL, 1)]
-    return _process_legs(data, legs, filters, call_spread_checks, mode)
+    return _process_legs(data, legs, params, vertical_call_checks)
 
 
-def long_put_spread(data, filters, mode="market"):
-    logger.debug("Creating Long Put Spreads...")
+def long_put_spread(data, **params):
     legs = [(OptionType.PUT, -1), (OptionType.PUT, 1)]
-    return _process_legs(data, legs, filters, put_spread_checks, mode)
+    return _process_legs(data, legs, params, vertical_put_checks)
 
 
-def short_put_spread(data, filters, mode="market"):
-    logger.debug("Creating Short Put Spreads...")
+def short_put_spread(data, **params):
     legs = [(OptionType.PUT, 1), (OptionType.PUT, -1)]
-    return _process_legs(data, legs, filters, put_spread_checks, mode)
+    return _process_legs(data, legs, params, vertical_put_checks)
 
 
-def _iron_condor(data, legs, filters, mode):
-    spread = _process_legs(data, legs, filters, iron_condor_checks, mode)
+def _iron_condor(data, legs, **params):
+    spread = _process_legs(data, legs, params, iron_condor_checks)
 
     if spread is None:
         return None
@@ -105,23 +90,21 @@ def _iron_condor(data, legs, filters, mode):
         )
 
 
-def long_iron_condor(data, filters, mode="market"):
-    logger.debug("Creating Long Iron Condors...")
+def long_iron_condor(data, **params):
     legs = [
         (OptionType.PUT, 1),
         (OptionType.PUT, -1),
         (OptionType.CALL, -1),
         (OptionType.CALL, 1),
     ]
-    return _iron_condor(data, legs, filters, mode)
+    return _iron_condor(data, legs, **params)
 
 
-def short_iron_condor(data, filters, mode="market"):
-    logger.debug("Creating Short Iron Condors...")
+def short_iron_condor(data, **params):
     legs = [
         (OptionType.PUT, -1),
         (OptionType.PUT, 1),
         (OptionType.CALL, 1),
         (OptionType.CALL, -1),
     ]
-    return _iron_condor(data, legs, filters, mode)
+    return _iron_condor(data, legs, **params)
